@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${package}.provider.mapper.DemoMapper">
+    <resultMap id="BaseResultMap" type="${package}.api.model.DemoModel">
+        <id column="id" jdbcType="CHAR" property="id"/>
+        <result column="test" jdbcType="VARCHAR" property="userId"/>
+        <result column="created_by" jdbcType="CHAR" property="createdBy" />
+        <result column="creation_date" jdbcType="TIMESTAMP" property="creationDate" />
+        <result column="updated_by" jdbcType="CHAR" property="updatedBy" />
+        <result column="updation_date" jdbcType="TIMESTAMP" property="updationDate" />
+        <result column="enabled_flag" jdbcType="BIT" property="enabledFlag" />
+    </resultMap>
+
+    <sql id="BaseTable">
+        test
+    </sql>
+
+</mapper>

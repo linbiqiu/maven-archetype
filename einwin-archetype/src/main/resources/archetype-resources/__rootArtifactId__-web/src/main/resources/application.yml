@@ -1,0 +1,49 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname:eureka.einwin.com}:${eureka.server.port:18761}/eureka/
+  instance:
+    prefer-ip-address: true
+
+spring:
+  profiles:
+    active: test
+  output:
+    ansi:
+      enabled: detect
+  main:
+    #bannerMode: log
+  mvc:
+    favicon:
+      enabled: false
+    view:
+      prefix: /views/
+      suffix: .html
+  http:
+    encoding:
+      charset: utf-8
+      enabled: true
+      force: true
+  messages:
+    basename: i18n/messages
+    cache-seconds: -1
+    encoding: utf-8
+  boot:
+    admin:
+      url: http://admin.einwin.com:18760
+
+server:
+  port: 8081
+  context-path: /
+  compression:
+    enabled: true
+logging:
+  file: /data/datalog/${spring.application.name}
+  level:
+    ROOT: INFO
+    org.springframework: INFO
+    org.springframework.web.servlet.view: DEBUG
+    org.springframework.web.servlet.mvc: DEBUG
+    io.undertow.request: DEBUG
+    com.einwin: DEBUG
+    com.einwin.framework.mybatis: DEBUG

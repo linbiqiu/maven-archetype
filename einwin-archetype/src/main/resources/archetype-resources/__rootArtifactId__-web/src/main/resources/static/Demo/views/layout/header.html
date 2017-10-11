@@ -1,0 +1,222 @@
+<script>
+    $(function () {
+        var title = document.title ? document.title : "";
+        $("#title").html("<b>一应云</b>" + title);
+        if (!Einwin.User.isLogin()) {
+            $("#loginModel").modal("show");
+        }
+        if(Einwin.User.isLogin()){
+            //console.log("userName:"+Einwin.User.getUserName());
+            $("#userNameLabel").text(Einwin.User.getUserName());
+        }
+
+
+    });
+
+    var Einwin = window.Einwin || {};
+    Einwin.User = (function () {
+        var edgeUrl = $.edgeApiUrl ? $.edgeApiUrl : "http://edge.einwin.com:18765";
+
+        var login = function () {
+            var username = $("#username").val();
+            var password = $("#password").val();
+            $.ajax({
+                type: 'POST',
+                url: edgeUrl + "/accessToken",
+                dataType: 'json',
+                data: {
+                    "username": username,
+                    "password": password
+                },
+                success: onSuccess
+            });
+
+            function onSuccess(result) {
+                if (result.code == "0") {
+                    $("#loginModel").modal("hide");
+                    accessToken = result.token;
+                    $.cookie("accessToken", accessToken,{
+                        path:"/",
+                        domain:"localhost"
+                    });
+                    getUserName();
+                    window.location.reload()
+                } else if(result.code=='6000'){
+                    Alert.error("用户名或密码错误");
+                } else if(result.code=='6001'
+                    || result.code=='6002'
+                    || result.code=='6003'){
+                    Alert.error("请重新登陆");
+                    $("#loginModel").modal("show");
+                }
+            }
+        };
+
+
+        var loginOut = function () {
+            $.removeCookie("accessToken",{
+                path:"/",
+                domain:"localhost"
+            });
+
+            $.removeCookie("user.username",{
+                path:"/",
+                domain:"localhost"
+            });
+
+            $("#loginModel").modal("show");
+            new AjaxHttp(edgeUrl + "/api/logout", null, function (result) {
+                if (result.code == '0') {
+                    console.log("login out  success");
+                }else{
+                    Alert.error(result.msg);
+                }
+            }).get();
+        }
+
+        var getUserName = function () {
+            var  userName= $.cookie("user.username");
+            if(!userName || userName ==null){
+                new AjaxHttp(edgeUrl+"/api/userInfo",null,function (result) {
+                    console.log(result);
+                    if(result.code=='0'){
+                        var userInfo = result.data;
+                        var name="";
+                        if(userInfo){
+                            name= userInfo.username;
+                            if(!name || name==null){
+                                name=userInfo.cellphone;
+                            }
+                            if(!name || name==null){
+                                name=userInfo.nickname;
+                            }
+                        }
+                        $.cookie("user.username",name,{
+                            path:"/",
+                            domain:"localhost"
+                        });
+                        return name;
+                    }
+                }).get();
+            }else{
+                return userName;
+            }
+        }
+
+        var isLogin = function () {
+            var accessToken = $.cookie("accessToken");
+            if(!accessToken){
+                return false;
+            }
+            if(accessToken == null){
+                return false;
+            }
+
+            if(accessToken=="null"){
+                return false;
+            }
+            return true;
+        };
+
+
+        return {
+            login: login,
+            loginOut:loginOut,
+            isLogin: isLogin,
+            getUserName:getUserName
+        }
+    }());
+</script>
+
+
+<header class="main-header">
+    <!-- Logo -->
+    <a href="#/home" class="logo">
+        <!-- mini logo for sidebar mini 50x50 pixels -->
+        <span class="logo-mini"><b>一应云</b></span>
+        <!-- logo for regular state and mobile devices -->
+        <span class="logo-lg" id="title">
+
+        </span>
+    </a>
+    <!-- Header Navbar: css can be found in header.less -->
+    <nav class="navbar navbar-static-top">
+        <!-- Sidebar toggle button-->
+        <a href="javascript:void(0)" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+            <span class="sr-only">Toggle navigation</span>
+        </a>
+        <!-- Navbar Right Menu -->
+        <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+                <!-- User Account: css can be found in dropdown.less -->
+                <li class="dropdown user user-menu">
+                    <a href="javascript:void(0)" class="dropdown-toggle">
+                        <img src="/webjars/einwin/images/user3-128x128.jpg" class="user-image" alt="User Image">
+                        <span class="hidden-xs" id="userNameLabel">
+
+                        </span>
+                    </a>
+                </li>
+                <!-- Control Sidebar Toggle Button -->
+                <li>
+                    <a href="javascript:void(0)" data-toggle="control-sidebar" title="设置"><i
+                            class="fa fa-gears"></i></a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" onclick="Einwin.User.loginOut()" title="退出"><i class="fa fa-sign-out"></i></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<div class="modal fade" id="loginModel" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document" style="margin-top: 10%;width: 30%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">登录</h4>
+            </div>
+            <div class="modal-body">
+                <div class="login-box-body">
+                    <!--  <p class="login-box-msg">一应云平台</p>-->
+
+                    <form>
+                        <div class="form-group has-feedback">
+                            <input type="input" class="form-control" placeholder="请输入手机号码" name="username"
+                                   id="username">
+                            <span class="fa fa-user form-control-feedback"></span>
+                        </div>
+                        <div class="form-group has-feedback">
+                            <input type="password" class="form-control" placeholder="请输入密码" name="password"
+                                   id="password">
+                            <span class="fa fa-lock form-control-feedback"></span>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-9">
+                                <!-- <div class="checkbox icheck">
+                                     <label>
+                                         <input type="checkbox"> Remember Me
+                                     </label>
+                                 </div>-->
+                            </div>
+                            <!-- /.col -->
+                            <div class="col-xs-3">
+                                <button class="btn btn-primary btn-block btn-flat " onclick="Einwin.User.login();">登录
+                                </button>
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                    </form>
+                    <!--  <a href="#">I forgot my password</a><br>
+                      <a href="register.html" class="text-center">Register a new membership</a>-->
+
+                </div>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div><!-- /.modal-dialog -->
+</div>

@@ -1,0 +1,74 @@
+eureka:
+  client:
+    serviceUrl:
+          defaultZone: http://${eureka.instance.hostname:eureka.einwin.com}:${eureka.server.port:18761}/eureka/
+  instance:
+    prefer-ip-address: true
+
+spring:
+  profiles:
+    active: dev
+  output:
+    ansi:
+      enabled: detect
+  http:
+    encoding:
+      charset: utf-8
+      enabled: true
+      force: true
+    multipart:
+      file-size-threshold: 0
+      enabled: true
+      resolve-lazily: false
+      max-request-size: 20MB
+      max-file-size: 5MB
+  messages:
+      basename: i18n/messages
+      cache-seconds: -1
+      encoding: utf-8
+  boot:
+      admin:
+        url: http://admin.einwin.com:18760
+
+  datasource:
+    poolName: ${spring.application.name}
+    type: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.2.190:3306/luck_draw?tinyInt1isBit=false&useUnicode=true&characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&zeroDateTimeBehavior=convertToNull
+    username: root
+    password: 123456
+    autoCommit: false
+    minIdle: 5
+    maximumPoolSize: 20
+    connectionInitSql: select 1
+    hikari:
+      idle-timeout: 10000
+
+pagehelper:
+  autoRuntimeDialect: true
+#  pageSizeZero: true
+  reasonable: false
+
+server:
+  port: 8080
+  context-path: /
+  compression:
+    enabled: true
+
+mybatis:
+    configuration:
+        map-underscore-to-camel-case: true
+        default-fetch-size: 100
+        default-statement-timeout: 30
+    mapperLocations: classpath*:com/einwin/mapper/*.xml
+
+logging:
+  file: ${spring.application.name}
+  level:
+    ROOT: INFO
+    org.springframework: INFO
+    org.springframework.web.servlet.view: DEBUG
+    org.springframework.web.servlet.mvc: DEBUG
+    io.undertow.request: DEBUG
+    com.einwin: DEBUG
+    com.einwin.framework.mybatis: DEBUG

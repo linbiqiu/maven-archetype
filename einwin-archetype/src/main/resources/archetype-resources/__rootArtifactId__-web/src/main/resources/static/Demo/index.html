@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>demo</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="inp">
+
+
+</head>
+<body class="sidebar-mini skin-blue"  ng-app="luckDrawApp">
+<div class="wrapper">
+    <div ng-include="'views/layout/header.html'"></div>
+    <div ng-include="'views/layout/sidebar.html'"></div>
+    <!--<div ng-include="'../webjars/einwin/layout/header.html'"></div>-->
+    <!--<div ng-include="'../webjars/einwin/layout/sidebar.html'"></div>-->
+    <div ng-view="" class="main-content-container"></div>
+</div>
+</body>
+
+<script src="scripts/module/include.js"></script>
+<script>
+    Einwin.Include.include();
+</script>
+<script src="scripts/module/config.js"></script>
+<script src="scripts/controllers/index.js"></script>
+
+
+<script src="views/test/test.js"></script>
+</html>
